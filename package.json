@@ -1,0 +1,50 @@
+{
+  "name": "wingizz",
+  "version": "1.0.0",
+  "description": "A social messaging app for society wide messages, notifications and events.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "start": "node index.js",
+    "lint": "eslint .",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GaurKS/wingizz.git"
+  },
+  "keywords": [
+    "koajs",
+    "nodejs",
+    "mongoDB",
+    "social-media",
+    "messaging-app",
+    "wingizz",
+    "javascript"
+  ],
+  "author": "Gaurav Shah",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GaurKS/wingizz/issues"
+  },
+  "homepage": "https://github.com/GaurKS/wingizz#readme",
+  "devDependencies": {
+    "dotenv": "^16.4.1",
+    "nodemon": "^3.0.3"
+  },
+  "dependencies": {
+    "@koa/router": "^12.0.1",
+    "bcrypt": "^5.1.1",
+    "joi": "^17.12.1",
+    "jsonwebtoken": "^9.0.2",
+    "koa": "^2.15.0",
+    "koa-bodyparser": "^4.4.1",
+    "koa-helmet": "^7.0.2",
+    "koa-json": "^2.0.2",
+    "koa-logger": "^3.2.1",
+    "koa-response-time": "^2.1.0",
+    "mongodb": "^6.3.0",
+    "uuid": "^9.0.1",
+    "winston": "^3.11.0"
+  }
+}
