@@ -11,5 +11,29 @@ class Society {
   }
 }
 
+
+// resource [
+//   {
+//    resourceId: "rid_",
+//    resourceName: "resourceName",
+//    count: "resourceType",
+//    capacity: "resourceCapacity"
+//   },
+// ]
+
+// wing
+// {
+//   wingId: "wid_",
+//   wingName: "wingName",
+//   resources: [
+//     {
+//       resourceId: "rid_",
+//       count: "resourceCount"
+//       capacity: "resourceCapacity"
+//     },
+//   ]
+// }
+
+
 module.exports = Society;
 

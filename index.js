@@ -12,10 +12,11 @@ const privateRoutes = require('./router/private.route');
 
 
 const run = async () => {
+
   const app = new Koa();
   dbInit().then(app.context.dbClient = dbClient()).catch((err) => { logger.error(err) })
-  app.use(ExceptionHandler())
   app.use(json())
+  app.use(ExceptionHandler())
   app.use(koaBodyParser())
   app.use(koaHelmet())
   app.use(KoaLogger((str) => { logger.info(str) }))

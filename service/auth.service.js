@@ -131,5 +131,4 @@ const editUser = async (ctx) => {
   return;
 }
 
-
 module.exports = { registerUser, loginUser, editUser };

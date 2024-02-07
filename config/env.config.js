@@ -14,6 +14,7 @@ module.exports = {
   mongo_comment_collection: process.env.MONGO_COMMENT_COLLECTION,
   mongo_request_collection: process.env.MONGO_REQUEST_COLLECTION,
   mongo_notification_collection: process.env.MONGO_NOTIFICATION_COLLECTION,
+  mongo_event_collection: process.env.MONGO_EVENT_COLLECTION,
 
   // jwt secrets
   jwt_secret: process.env.JWT_SECRET,

@@ -6,7 +6,7 @@ class User {
     this.password = password;
     this.contact = contact;
     this.roles = roles;
-    this.address = address;
+    this.address = address; // {societyId, wingId, flatNo}
     this.active = true;
     this.isPasswordReset = false;
     this.createdAt = new Date();
