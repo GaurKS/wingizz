@@ -1,50 +1,40 @@
 const jwt = require('jsonwebtoken')
-const AppException = require('../exceptions/app.exception')
+const envConfig = require('../config/env.config')
+const { fetchUser } = require('../mongodb/user.mongo')
 
-
-module.exports = function () {
-  return async (ctx, next) => {
-    const exceptionBag = []
-    const tokenFromCookies = ctx.cookies.get('token')
-    const authorizationHeader = ctx.request.headers.authorization
-
-    if (!tokenFromCookies && !authorizationHeader) {
-      throw new AppException(`No authorization token found on request. Token From Cookies: ${tokenFromCookies}, Authorization Header: ${authorizationHeader}.`, 'Invalid Credentials.', 401)
+exports.verifyToken = async (ctx, next) => {
+  const token = ctx.cookies.get('token')
+  const mongoClient = await ctx.dbClient;
+  if (!token) {
+    ctx.status = 401
+    ctx.body = {
+      message: 'Unauthorized'
     }
-
-    if (tokenFromCookies) {
-      await validateToken(ctx, tokenFromCookies, exceptionBag)
-    }
-
-    if (authorizationHeader) {
-      await validateToken(ctx, authorizationHeader.replace('Bearer ', ''), exceptionBag)
-    }
-
-    if (exceptionBag.length) {
-      throw exceptionBag[0]
-    }
-
-    return next()
+    return
   }
-}
-
-async function validateToken(ctx, token, exceptionBag) {
-  try {
-    ctx.state.user = jwt.verify(token, Buffer.from(process.env.ASYMMETRIC_PUBLIC_KEY), { algorithm: 'RS256' }).user
-  } catch (e) {
-    if (e.name === 'NotBeforeError') {
-      throw new AppException(`Token current time is before the nbf claim. Token: ${token}.`, 'Invalid Credentials.', 403)
+  const user = jwt.verify(token, envConfig.jwt_secret);
+  if (!user) {
+    ctx.status = 403
+    ctx.body = {
+      message: 'Invalid token'
     }
-
-    if (e.name === 'TokenExpiredError') {
-      throw new AppException(`Token expired. Token: ${token}.`, 'Token expired.', 403)
-    }
-
-    if (e.name === 'JsonWebTokenError') {
-      exceptionBag.push(new AppException(`${e.message}. Token: ${token}.`, 'Invalid Credentials.', 401))
-      return
-    }
-
-    exceptionBag.push(new AppException(`Unknown error. Error message: ${e.message}.`, 'Invalid credentials.', 401))
+    return
   }
+
+  const authUser = await fetchUser(mongoClient, user.id, null);
+  if (!authUser) {
+    ctx.status = 401
+    ctx.body = {
+      message: 'Unauthorized'
+    }
+    return
+  }
+  ctx.user = {
+    id: authUser.userTag,
+    role: authUser.role,
+    sid: authUser.address?.society || null,
+    wid: authUser.address?.wing || null,
+    flat: authUser.address?.house || null
+  };
+  await next()
 }

@@ -1,12 +1,11 @@
 class Channel {
-  constructor(id, societyId, wingId, type, channelName, members, admins, posts, resources, events) {
+  constructor(id, societyId, type, channelName, members, admins, posts, resources, events) {
     this.channelId = id;
-    this.sid = societyId;
-    this.wid = wingId;
     this.channelType = type;
+    this.society = societyId;
     this.channelName = channelName;
-    this.members = members;
-    this.admins = admins;
+    this.members = members; // []
+    this.admins = admins; // []
     this.posts = posts; // []
     this.resources = resources; // array of common resources
     this.events = events // []

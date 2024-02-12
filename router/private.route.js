@@ -1,7 +1,15 @@
 const KoaRouter = require('@koa/router')
-const user = require('./user.route')
+const userRoute = require('./user.route')
+const commentRoute = require('./comment.route')
+const societyRoute = require('./society.route')
+const postRoute = require('./post.route')
 
-const router = new KoaRouter()
-router.use(user)
+const router = new KoaRouter({ prefix: '/api' })
 
-module.exports = router
+router.use(userRoute)
+router.use(societyRoute)
+router.use(postRoute);
+router.use(commentRoute)
+
+
+module.exports = router;

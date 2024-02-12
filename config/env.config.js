@@ -12,11 +12,17 @@ module.exports = {
   mongo_channel_collection: process.env.MONGO_CHANNEL_COLLECTION,
   mongo_post_collection: process.env.MONGO_POST_COLLECTION,
   mongo_comment_collection: process.env.MONGO_COMMENT_COLLECTION,
+  mongo_reaction_collection: process.env.MONGO_REACTION_COLLECTION,
   mongo_request_collection: process.env.MONGO_REQUEST_COLLECTION,
   mongo_notification_collection: process.env.MONGO_NOTIFICATION_COLLECTION,
   mongo_event_collection: process.env.MONGO_EVENT_COLLECTION,
+  mongo_invitation_collection: process.MONGO_INVITATION_COLLECTION,
 
   // jwt secrets
   jwt_secret: process.env.JWT_SECRET,
-  jwt_token_expiry: process.env.JWT_TOKEN_EXPIRY
+  jwt_token_expiry: process.env.JWT_TOKEN_EXPIRY,
+
+  // facebook secrets
+  fb_page_token: process.env.FB_PAGE_TOKEN,
+  fb_page_id: process.env.FB_PAGE_ID,
 };

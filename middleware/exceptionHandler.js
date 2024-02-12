@@ -10,7 +10,8 @@ module.exports = () => {
     try {
       await next()
     } catch (error) {
-      logger.error(error.message)
+      // logger.error(error.message)
+      logger.error(error)
 
       if (error instanceof AppException) {
         ctx.status = error.httpStatusCode

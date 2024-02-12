@@ -1,11 +1,11 @@
 class User {
-  constructor(username, id, email, password, contact, roles, address) {
-    this.username = username;
-    this.userTag = id;
+  constructor(name, userId, email, password, contact, role, address) {
+    this.name = name;
+    this.userTag = userId;
     this.email = email;
     this.password = password;
     this.contact = contact;
-    this.roles = roles;
+    this.role = role;
     this.address = address; // {societyId, wingId, flatNo}
     this.active = true;
     this.isPasswordReset = false;

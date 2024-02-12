@@ -8,6 +8,18 @@ const requestType = {
   USER: 'user'
 }
 
+const userRole = {
+  ADMIN: 'admin',
+  USER: 'user'
+}
+
+const roles = {
+  R: 'root', // first user of the society
+  S: 'secretary', // society secretary
+  A: 'admin', // wing admin
+  U: 'user' // society member
+}
+
 const requestStatus = {
   PENDING: 'pending',
   APPROVED: 'approved',
@@ -23,6 +35,8 @@ const postType = {
 module.exports = {
   channelType,
   requestType,
+  userRole,
+  roles,
   requestStatus,
   postType,
 }
