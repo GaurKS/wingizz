@@ -1,5 +1,6 @@
 const joi = require("joi");
 const { fetchChannel } = require("../mongodb/channel.mongo");
+const { fetchReaction } = require("../mongodb/post.mongo");
 
 
 exports.validateCreatePostBody = async (ctx, next) => {
@@ -28,8 +29,6 @@ exports.isChannelValid = async (ctx) => {
   const { cid } = ctx.params;
   const mongoClient = await ctx.dbClient;
   const channel = await fetchChannel(mongoClient, cid);
-  console.log("test1 ::", channel);
-  // if channel is undefined then throw error 
   if (!channel) {
     return new Error(`Invalid channel id`)
   }
@@ -40,7 +39,6 @@ exports.isChannelValid = async (ctx) => {
 
 exports.isChannelMember = async (ctx) => {
   const { user } = ctx;
-  console.log("u:", user, "ctx: ", ctx.channel.members.indexOf(user.id));
   if (ctx.channel && (ctx.channel.members.indexOf(user.id) !== -1 || ctx.channel.admins.indexOf(user.id) === -1)) {
     return null;
   }
@@ -50,11 +48,22 @@ exports.isChannelMember = async (ctx) => {
 
 exports.isAuthorValid = async (ctx) => {
   const { post, user } = ctx;
-  if (post.author !== user.userId) {
+  if (post && post.author !== user.id) {
     return new Error(`User not allowed to edit this post`)
   }
   return null;
 }
 
+// exports.checkPostReaction = async (ctx) => {
+//   const { post } = ctx;
+//   const mongoClient = await ctx.dbClient;
+
+//   const reaction = await fetchReaction(mongoClient, ctx.params.pid, null, ctx.user.id);
+
+//   if (reaction) {
+//     return new Error(`Invalid reaction`)
+//   }
+//   return null;
+// }
 
 

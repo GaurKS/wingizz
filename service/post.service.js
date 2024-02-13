@@ -1,11 +1,12 @@
 const AppException = require("../exception/app.exception");
 const Post = require('../model/post.model');
 const { generateUid } = require('../utils/generateUid')
-const { fetchAllPosts, createPost, updatePost, deletePost } = require('../mongodb/post.mongo');
+const { fetchAllPosts, createPost, updatePost, deletePost, editReaction, fetchReaction } = require('../mongodb/post.mongo');
 const { createSuccessResponse } = require("../utils/createResponse");
 const { postToPage } = require("./fb.service");
 const logger = require('../config/winston.config');
 const envConfig = require("../config/env.config");
+const Reaction = require("../model/reaction.model");
 
 
 exports.getPost = async (ctx) => {
@@ -23,7 +24,8 @@ exports.getPost = async (ctx) => {
 
 exports.getAllPost = async (ctx) => {
   const mongoClient = ctx.dbClient;
-  const posts = await fetchAllPosts(mongoClient, ctx.params.cid, -1, null, null);
+  const { limit, skip, sort } = ctx.query;
+  const posts = await fetchAllPosts(mongoClient, ctx.params.cid, sort, limit, skip);
   ctx.status = 200;
   ctx.body = createSuccessResponse(
     ctx.originalUrl,
@@ -75,6 +77,7 @@ exports.createPost = async (ctx) => {
 
 exports.editPost = async (ctx) => {
   const { text, media } = ctx.request.body;
+  const mongoClient = ctx.dbClient;
   const result = await updatePost(mongoClient, ctx.params.pid, text);
   if (!result) {
     throw new AppException(`Post update failed`, 'Post update failed', 500);
@@ -91,7 +94,57 @@ exports.editPost = async (ctx) => {
   )
 }
 
+exports.editPostReaction = async (ctx) => {
+  const mongoClient = ctx.dbClient;
+  const reaction = await fetchReaction(mongoClient, ctx.params.pid, null, ctx.user.id)
+
+  if (!reaction) {
+    const newReaction = new Reaction(ctx.params.pid, null, ctx.params.cid, 1, ctx.user.id)
+    await mongoClient
+      .db(envConfig.mongo_database)
+      .collection(envConfig.mongo_reaction_collection)
+      .insertOne(newReaction);
+    await mongoClient
+      .db(envConfig.mongo_database)
+      .collection(envConfig.mongo_post_collection)
+      .updateOne({ postId: ctx.params.pid }, { $inc: { upvote: 1 } });
+  }
+  else {
+    if (reaction.reaction === 1) {
+      await mongoClient
+        .db(envConfig.mongo_database)
+        .collection(envConfig.mongo_reaction_collection)
+        .updateOne({ postId: ctx.params.pid, reactedBy: ctx.user.id }, { $set: { reaction: -1 } });
+      await mongoClient
+        .db(envConfig.mongo_database)
+        .collection(envConfig.mongo_post_collection)
+        .updateOne({ postId: ctx.params.pid }, { $inc: { upvote: -1 } });
+    }
+    else if (reaction.reaction === -1) {
+      await mongoClient
+        .db(envConfig.mongo_database)
+        .collection(envConfig.mongo_reaction_collection)
+        .updateOne({ postId: ctx.params.pid, reactedBy: ctx.user.id }, { $set: { reaction: 1 } });
+      await mongoClient
+        .db(envConfig.mongo_database)
+        .collection(envConfig.mongo_post_collection)
+        .updateOne({ postId: ctx.params.pid }, { $inc: { upvote: 1, downvote: -1 } });
+    }
+  }
+
+  ctx.status = 201;
+  ctx.body = createSuccessResponse(
+    ctx.originalUrl,
+    ctx.method,
+    ctx.status,
+    {
+      message: 'Post reaction updated successfully'
+    }
+  )
+}
+
 exports.deletePost = async (ctx) => {
+  const mongoClient = ctx.dbClient;
   const result = await deletePost(mongoClient, ctx.params.pid);
   if (!result) {
     throw new AppException(`Post delete failed`, 'Post delete failed', 500);

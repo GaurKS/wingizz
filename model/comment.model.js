@@ -6,6 +6,7 @@ class Comment {
     this.channelId = channelId;
     this.text = text;
     this.media = media;
+    this.upvote = 0;
     this.reaction = [];
     this.createdAt = new Date();
   }

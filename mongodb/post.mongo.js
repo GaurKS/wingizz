@@ -9,14 +9,14 @@ exports.fetchPost = async (mongoClient, pid) => {
   return post;
 }
 
-exports.fetchAllPosts = async (mongoClient, cid, sort, limit, skip) => {
+exports.fetchAllPosts = async (mongoClient, cid, sort = -1, limit = 10, skip = 0) => {
   const posts = await mongoClient
     .db(envConfig.mongo_database)
     .collection(envConfig.mongo_post_collection)
     .find({ channelId: cid })
-    .sort({ createdAt: sort })
-    .limit(limit)
-    .skip(skip)
+    .sort({ createdAt: parseInt(sort) })
+    .limit(parseInt(limit))
+    .skip(parseInt(skip))
     .toArray();
 
   return posts;
@@ -48,4 +48,41 @@ exports.deletePost = async (mongoClient, pid) => {
 
   return result;
 
+}
+
+/**
+ * 
+ * @param {*} mongoClient 
+ * @param {*} postId 
+ * @param {*} commentId 
+ * @param {*} userId 
+ * @returns 
+ */
+exports.fetchReaction = async (mongoClient, postId, commentId, userId) => {
+  const result = await mongoClient
+    .db(envConfig.mongo_database)
+    .collection(envConfig.mongo_reaction_collection)
+    .findOne({ postId: postId, reactedBy: userId });
+
+  return result;
+}
+
+/**
+ * 
+ * @param {*} mongoClient 
+ * @param {*} reaction 
+ * @param {*} postId 
+ * @param {*} commentId 
+ * @param {*} userId 
+ * @returns 
+ */
+exports.editReaction = async (mongoClient, reaction, postId, commentId, userId) => {
+  const result = await mongoClient
+    .db(envConfig.mongo_database)
+    .collection(envConfig.mongo_reaction_collection)
+    .findOneAndUpdate({ $and: [{ postId: postId }, { reactedBy: userId }] }, { $set: { reaction: reaction } }, { upsert: true });
+
+  await collection.findOneAndUpdate(filter, update, { upsert: true })
+
+  return result;
 }

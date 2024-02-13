@@ -1,14 +1,17 @@
 const KoaRouter = require('@koa/router');
 const { verifyToken } = require('../middleware/jwt');
-const { getComment, createComment, editComment, deleteComment } = require('../service/comment.service');
+const { getComment, createComment, editComment, deleteComment, getAllComments } = require('../service/comment.service');
 const validate = require('../middleware/validate');
 const { isCommentValid, isUserValid, isPostValid, validateCommentBody, canEdit } = require('../validator/comment.validator');
+const { isChannelValid, isChannelMember } = require('../validator/post.validator');
 
 const router = new KoaRouter();
 
-router.get('/comment/:cid', verifyToken, validate([isCommentValid, isUserValid]), getComment);
-router.post('/comment/:pid/add/:cid', verifyToken, validateCommentBody, validate([isPostValid]), createComment);
-router.patch('/comment/:cid', verifyToken, validate([isCommentValid, isUserValid, isPostValid, canEdit]), editComment);
-router.delete('/comment/:cid', verifyToken, validate([isCommentValid, canEdit]), deleteComment);
+router.post('/comment/:pid/add/:cid', verifyToken, validateCommentBody, validate([isChannelValid, isChannelMember, isPostValid]), createComment);
+router.get('/:cid/comment/:coid', verifyToken, validate([isChannelValid, isCommentValid, isUserValid]), getComment);
+router.get('/:cid/post/:pid', verifyToken, validate([isChannelValid, isChannelMember, isUserValid]), getAllComments);
+router.patch('/:cid/comment/:coid', verifyToken, validate([isChannelValid, isCommentValid, isUserValid, canEdit]), editComment);
+router.delete('/comment/:coid', verifyToken, validate([isCommentValid, canEdit]), deleteComment);
+router.patch('/:cid/comment/:coid/reaction', verifyToken, validate([isChannelValid, isChannelMember, isCommentValid]), editCommentReaction);
 
 module.exports = router.routes();
