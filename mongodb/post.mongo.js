@@ -1,5 +1,11 @@
 const envConfig = require("../config/env.config");
 
+/**
+ * 
+ * @param {*} mongoClient 
+ * @param {*} pid 
+ * @returns 
+ */
 exports.fetchPost = async (mongoClient, pid) => {
   const post = await mongoClient
     .db(envConfig.mongo_database)
@@ -9,6 +15,15 @@ exports.fetchPost = async (mongoClient, pid) => {
   return post;
 }
 
+/**
+ * 
+ * @param {*} mongoClient 
+ * @param {*} cid 
+ * @param {*} sort 
+ * @param {*} limit 
+ * @param {*} skip 
+ * @returns 
+ */
 exports.fetchAllPosts = async (mongoClient, cid, sort = -1, limit = 10, skip = 0) => {
   const posts = await mongoClient
     .db(envConfig.mongo_database)
@@ -22,6 +37,12 @@ exports.fetchAllPosts = async (mongoClient, cid, sort = -1, limit = 10, skip = 0
   return posts;
 }
 
+/**
+ * 
+ * @param {*} mongoClient 
+ * @param {*} post 
+ * @returns 
+ */
 exports.createPost = async (mongoClient, post) => {
   const result = await mongoClient
     .db(envConfig.mongo_database)
@@ -31,6 +52,13 @@ exports.createPost = async (mongoClient, post) => {
   return result;
 }
 
+/**
+ * 
+ * @param {*} mongoClient 
+ * @param {*} pid 
+ * @param {*} text 
+ * @returns 
+ */
 exports.updatePost = async (mongoClient, pid, text) => {
   const result = await mongoClient
     .db(envConfig.mongo_database)
@@ -40,6 +68,12 @@ exports.updatePost = async (mongoClient, pid, text) => {
   return result;
 }
 
+/**
+ * 
+ * @param {*} mongoClient 
+ * @param {*} pid 
+ * @returns 
+ */
 exports.deletePost = async (mongoClient, pid) => {
   const result = await mongoClient
     .db(envConfig.mongo_database)
@@ -62,7 +96,7 @@ exports.fetchReaction = async (mongoClient, postId, commentId, userId) => {
   const result = await mongoClient
     .db(envConfig.mongo_database)
     .collection(envConfig.mongo_reaction_collection)
-    .findOne({ postId: postId, reactedBy: userId });
+    .findOne({ postId: postId, commentId: commentId, reactedBy: userId });
 
   return result;
 }

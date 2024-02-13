@@ -1,6 +1,9 @@
+const envConfig = require("../config/env.config")
 const AppException = require("../exception/app.exception")
 const Comment = require("../model/comment.model")
+const Reaction = require("../model/reaction.model")
 const { updateComment, deleteComment, createComment, fetchComments } = require("../mongodb/comment.mongo")
+const { fetchReaction } = require("../mongodb/post.mongo")
 const { createSuccessResponse } = require("../utils/createResponse")
 const { generateUid } = require("../utils/generateUid")
 
@@ -101,6 +104,56 @@ exports.deleteComment = async (ctx) => {
     {
       message: 'Comment deleted successfully',
       comment: ctx.comment
+    }
+  )
+}
+
+
+exports.editCommentReaction = async (ctx) => {
+  const mongoClient = ctx.dbClient;
+  const reaction = await fetchReaction(mongoClient, null, ctx.params.coid, ctx.user.id)
+
+  if (!reaction) {
+    const newReaction = new Reaction(null, ctx.params.coid, ctx.params.cid, 1, ctx.user.id);
+    await mongoClient
+      .db(envConfig.mongo_database)
+      .collection(envConfig.mongo_reaction_collection)
+      .insertOne(newReaction)
+    await mongoClient
+      .db(envConfig.mongo_database)
+      .collection(envConfig.mongo_comment_collection)
+      .updateOne({ commentId: ctx.params.coid }, { $inc: { upvote: 1 } })
+  }
+  else {
+    if (reaction.reaction === 1) {
+      console.log(await mongoClient
+        .db(envConfig.mongo_database)
+        .collection(envConfig.mongo_reaction_collection)
+        .updateOne({ commentId: ctx.params.coid, reactedBy: ctx.user.id }, { $set: { reaction: -1 } }))
+      await mongoClient
+        .db(envConfig.mongo_database)
+        .collection(envConfig.mongo_comment_collection)
+        .updateOne({ commentId: ctx.params.coid }, { $inc: { upvote: -1 } });
+    }
+    else if (reaction.reaction === -1) {
+      await mongoClient
+        .db(envConfig.mongo_database)
+        .collection(envConfig.mongo_reaction_collection)
+        .updateOne({ postId: ctx.params.pid, reactedBy: ctx.user.id }, { $set: { reaction: 1 } });
+      await mongoClient
+        .db(envConfig.mongo_database)
+        .collection(envConfig.mongo_post_collection)
+        .updateOne({ postId: ctx.params.pid }, { $inc: { upvote: 1 } });
+    }
+  }
+
+  ctx.status = 201;
+  ctx.body = createSuccessResponse(
+    ctx.originalUrl,
+    ctx.method,
+    ctx.status,
+    {
+      message: 'Post reaction updated successfully'
     }
   )
 }

@@ -1,6 +1,6 @@
 const KoaRouter = require('@koa/router');
 const { verifyToken } = require('../middleware/jwt');
-const { getComment, createComment, editComment, deleteComment, getAllComments } = require('../service/comment.service');
+const { getComment, createComment, editComment, deleteComment, getAllComments, editCommentReaction } = require('../service/comment.service');
 const validate = require('../middleware/validate');
 const { isCommentValid, isUserValid, isPostValid, validateCommentBody, canEdit } = require('../validator/comment.validator');
 const { isChannelValid, isChannelMember } = require('../validator/post.validator');

@@ -7,7 +7,7 @@ const { getPost, getAllPost, createPost, editPost, deletePost, editPostReaction 
 
 const router = new KoaRouter();
 
-router.post('/channel/:cid/post', verifyToken, validateCreatePostBody, validate([isChannelValid, isChannelMember]), createPost);
+router.post('/channel/:cid/post', verifyToken, validateCreatePostBody, validate([isChannelValid, isChannelMember]), createPost)
 router.get('/channel/:cid/post/:pid', verifyToken, validate([isChannelValid, isChannelMember, isPostValid]), getPost);
 router.get('/channel/:cid/post', verifyToken, validate([isChannelValid, isChannelMember]), getAllPost);
 router.patch('/channel/:cid/post/:pid', verifyToken, validate([isChannelValid, isChannelMember, isPostValid, isAuthorValid]), editPost);

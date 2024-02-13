@@ -30,6 +30,13 @@ exports.fetchChannel = async (mongoClient, cid) => {
   return channel;
 }
 
+/**
+ * 
+ * @param {*} mongoClient 
+ * @param {*} sid 
+ * @param {*} wid 
+ * @returns 
+ */
 exports.fetchChannels = async (mongoClient, sid, wid) => {
   const query = {};
   if (wid) {
