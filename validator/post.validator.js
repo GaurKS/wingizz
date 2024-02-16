@@ -1,7 +1,5 @@
 const joi = require("joi");
 const { fetchChannel } = require("../mongodb/channel.mongo");
-const { fetchReaction } = require("../mongodb/post.mongo");
-
 
 exports.validateCreatePostBody = async (ctx, next) => {
   const createPostBody = joi.object({
@@ -32,14 +30,13 @@ exports.isChannelValid = async (ctx) => {
   if (!channel) {
     return new Error(`Invalid channel id`)
   }
-
   ctx.channel = channel;
   return null;
 }
 
 exports.isChannelMember = async (ctx) => {
   const { user } = ctx;
-  if (ctx.channel && (ctx.channel.members.indexOf(user.id) !== -1 || ctx.channel.admins.indexOf(user.id) === -1)) {
+  if (ctx.channel && (ctx.channel.members.indexOf(user.id) !== -1 || ctx.channel.admins.indexOf(user.id) !== -1)) {
     return null;
   }
   return new Error(`User is not a member of this channel`)
@@ -53,17 +50,4 @@ exports.isAuthorValid = async (ctx) => {
   }
   return null;
 }
-
-// exports.checkPostReaction = async (ctx) => {
-//   const { post } = ctx;
-//   const mongoClient = await ctx.dbClient;
-
-//   const reaction = await fetchReaction(mongoClient, ctx.params.pid, null, ctx.user.id);
-
-//   if (reaction) {
-//     return new Error(`Invalid reaction`)
-//   }
-//   return null;
-// }
-
 

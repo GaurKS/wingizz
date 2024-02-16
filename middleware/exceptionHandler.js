@@ -3,6 +3,7 @@ const logger = require('../config/winston.config')
 const AppException = require('../exception/app.exception')
 const { createErrorResponse } = require('../utils/createResponse')
 const { ValidationError } = require('joi')
+const { TokenExpiredError } = require('jsonwebtoken')
 
 
 module.exports = () => {
@@ -16,6 +17,10 @@ module.exports = () => {
       if (error instanceof AppException) {
         ctx.status = error.httpStatusCode
         ctx.body = createErrorResponse(ctx.originalUrl, ctx.method, error.httpStatusCode, error.clientMessage)
+      }
+      else if (error instanceof TokenExpiredError) {
+        ctx.status = 403
+        ctx.body = createErrorResponse(ctx.originalUrl, ctx.method, 403, error.message)
       }
       else if (error instanceof MongoError.MongoNetworkTimeoutError) {
         ctx.status = 503

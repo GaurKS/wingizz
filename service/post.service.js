@@ -96,10 +96,10 @@ exports.editPost = async (ctx) => {
 
 exports.editPostReaction = async (ctx) => {
   const mongoClient = ctx.dbClient;
-  const reaction = await fetchReaction(mongoClient, ctx.params.pid, null, ctx.user.id)
+  const reaction = await fetchReaction(mongoClient, ctx.params.pid, null, ctx.user.id);
 
   if (!reaction) {
-    const newReaction = new Reaction(ctx.params.pid, null, ctx.params.cid, 1, ctx.user.id)
+    const newReaction = new Reaction(ctx.params.pid, null, ctx.params.cid, 1, ctx.user.id);
     await mongoClient
       .db(envConfig.mongo_database)
       .collection(envConfig.mongo_reaction_collection)
@@ -128,7 +128,7 @@ exports.editPostReaction = async (ctx) => {
       await mongoClient
         .db(envConfig.mongo_database)
         .collection(envConfig.mongo_post_collection)
-        .updateOne({ postId: ctx.params.pid }, { $inc: { upvote: 1, downvote: -1 } });
+        .updateOne({ postId: ctx.params.pid }, { $inc: { upvote: 1 } });
     }
   }
 
